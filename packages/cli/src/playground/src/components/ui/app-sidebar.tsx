@@ -1,6 +1,6 @@
 'use client';
 
-import { Network, Globe, ArrowLeftFromLine, Book } from 'lucide-react';
+import { Network, Globe, ArrowLeftFromLine, Book, DatabaseIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 
 import {
@@ -139,6 +139,11 @@ const links = [
     name: 'Workflows',
     url: '/workflows',
     icon: WorkflowIcon,
+  },
+  {
+    name: 'Datasets',
+    url: '/datasets',
+    icon: DatabaseIcon,
   },
   {
     name: 'Runtime Context',

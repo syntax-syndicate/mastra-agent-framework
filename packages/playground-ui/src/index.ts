@@ -6,6 +6,7 @@ export * from './domains/networks/index';
 export * from './domains/tools/index';
 export * from './domains/workflows/index';
 export * from './domains/resizable-panel';
+export * from './domains/datasets';
 export * from './components/dynamic-form/index';
 export * from './components/ui/data-table';
 export * from './components/ui/containers';
@@ -25,6 +26,10 @@ export * from './lib/polls';
 export * from './hooks/use-speech-recognition';
 export * from './components/ui/radio-group';
 export * from './components/ui/entry';
+export * from './components/ui/input';
+export * from './components/ui/textarea';
+export * from './components/ui/markdown-renderer';
+export * from './components/ui/elements';
 
 export type { TraceContextType } from './domains/traces/context/trace-context';
 

@@ -34,6 +34,8 @@ import { LinkComponentProvider, MastraClientProvider } from '@mastra/playground-
 import VNextNetwork from './pages/networks/network/v-next';
 import { NavigateTo } from './lib/react-router';
 import { Link } from './lib/framework';
+import Datasets from './pages/datasets';
+import Dataset from './pages/datasets/dataset';
 
 const LinkComponentWrapper = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -58,6 +60,16 @@ function App() {
           <BrowserRouter>
             <LinkComponentWrapper>
               <Routes>
+                <Route
+                  element={
+                    <Layout>
+                      <Outlet />
+                    </Layout>
+                  }
+                >
+                  <Route path="/datasets" element={<Datasets />} />
+                  <Route path="/datasets/:datasetId" element={<Dataset />} />
+                </Route>
                 <Route
                   element={
                     <Layout>
