@@ -1,11 +1,10 @@
-import { Breadcrumb, Crumb, Header, MainContentLayout, DatasetItemDetailsDialog } from '@mastra/playground-ui';
+import { Breadcrumb, Crumb, Header, MainContentLayout, DatasetItemDialog } from '@mastra/playground-ui';
 import { useParams, Link } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 import { ItemsList, ItemsListHeader, ItemsListPageHeader } from '@/components/temporary/items-list';
-// import { DatasetItemDetailsDialog } from '@/domains/datasets/dataset-item-details-dialog';
 import { faker } from '@faker-js/faker';
 
 export default function Dataset() {
@@ -22,7 +21,7 @@ export default function Dataset() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [detailsIsOpened, setDetailsIsOpened] = useState<boolean>(false);
 
-  const dataRows = useMemo(
+  const datasetItems = useMemo(
     () =>
       Array.from({ length: 5 }, () => ({
         id: faker.string.uuid(),
@@ -30,6 +29,7 @@ export default function Dataset() {
         output: faker.lorem.paragraphs({ min: 4, max: 12 }),
         createdAt: new Date(),
         updatedAt: new Date(),
+        source: 'user',
       })),
     [],
   );
@@ -43,18 +43,18 @@ export default function Dataset() {
     }
   };
   const toPreviousItem = (currentScore: any) => {
-    const currentIndex = dataRows?.findIndex(score => score?.id === currentScore?.id);
-    if (currentIndex === -1 || currentIndex === (dataRows?.length || 0) - 1) {
+    const currentIndex = datasetItems?.findIndex(score => score?.id === currentScore?.id);
+    if (currentIndex === -1 || currentIndex === (datasetItems?.length || 0) - 1) {
       return null; // No next score
     }
-    return () => setSelectedItem(dataRows[(currentIndex || 0) + 1]);
+    return () => setSelectedItem(datasetItems[(currentIndex || 0) + 1]);
   };
   const toNextItem = (currentScore: any) => {
-    const currentIndex = dataRows?.findIndex(score => score?.id === currentScore?.id);
+    const currentIndex = datasetItems?.findIndex(score => score?.id === currentScore?.id);
     if ((currentIndex || 0) <= 0) {
       return null; // No previous score
     }
-    return () => setSelectedItem(dataRows[(currentIndex || 0) - 1]);
+    return () => setSelectedItem(datasetItems[(currentIndex || 0) - 1]);
   };
   // if (isLoading) {
   //   return null;
@@ -82,7 +82,7 @@ export default function Dataset() {
               <ItemsListPageHeader title={dataset.name} description={dataset.description} />
               <ItemsListHeader columnNames={columnNames} columnSizes={columnSizes} />
               <ItemsList
-                items={dataRows || []}
+                items={datasetItems || []}
                 selectedItem={selectedItem}
                 onItemClick={handleOnListItemClick}
                 columnSizes={`2fr_3fr_9rem`}
@@ -97,7 +97,7 @@ export default function Dataset() {
               />
             </div>
           </div>
-          <DatasetItemDetailsDialog
+          <DatasetItemDialog
             dataset={dataset}
             isOpen={detailsIsOpened}
             item={selectedItem}

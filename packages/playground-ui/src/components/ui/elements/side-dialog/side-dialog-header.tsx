@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/elements/button';
 import { ArrowDownIcon, ArrowUpIcon, XIcon } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils';
@@ -39,15 +39,15 @@ export function SideDialogHeader({ children, onNext, onPrevious, showInnerNav }:
             <span className="text-icon3">|</span>
             <div
               className={cn(
-                'flex gap-[1rem]',
+                'flex gap-[1rem] items-baseline',
                 '[&>button]:text-[0.875rem] [&>button]:flex [&>button]:items-center [&>button]:px-[0.5rem] [&>button]:py-[0.8rem] [&>button]:leading-[1]',
               )}
             >
-              <Button onClick={handleOnNext} disabled={!onNext}>
+              <Button onClick={handleOnNext} disabled={!onNext} variant="ghost">
                 <VisuallyHidden>Next</VisuallyHidden>
                 <ArrowUpIcon />
               </Button>
-              <Button onClick={handleOnPrevious} disabled={!onPrevious}>
+              <Button onClick={handleOnPrevious} disabled={!onPrevious} variant="ghost">
                 <VisuallyHidden>Previous</VisuallyHidden>
                 <ArrowDownIcon />
               </Button>
@@ -58,7 +58,7 @@ export function SideDialogHeader({ children, onNext, onPrevious, showInnerNav }:
 
       <Dialog.Close asChild>
         <button
-          className="inline-flex bg-surface5 appearance-none items-center justify-center rounded-md h-[3.5rem] w-[3.5rem] focus:shadow-[0_0_0_2px] focus:outline-none"
+          className="inline-flex  appearance-none items-center justify-center rounded-md h-[3.5rem] w-[3.5rem] focus:shadow-[0_0_0_2px] focus:outline-none"
           aria-label="Close"
         >
           <XIcon />

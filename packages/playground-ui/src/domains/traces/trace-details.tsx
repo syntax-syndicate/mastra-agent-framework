@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useContext, useState } from 'react';
-import { DatasetItemDetailsDialog } from '@/domains/datasets';
+import { DatasetItemDialog } from '@/domains/datasets';
+import { ScoreDialog } from '@/domains/scorers';
 
 import { Button } from '@/ds/components/Button';
 
@@ -11,12 +12,12 @@ import { Txt } from '@/ds/components/Txt';
 import { Icon } from '@/ds/icons';
 import { Header } from '@/ds/components/Header';
 import { Badge } from '@/ds/components/Badge';
+import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 
 export function TraceDetails() {
   const { trace, currentTraceIndex, prevTrace, nextTrace, traces } = useContext(TraceContext);
   const [datasetDialogIsOpen, setDatasetDialogIsOpen] = useState<boolean>(false);
-
-  console.log('--<>>', trace);
+  const [scoreDialogIsOpen, setScoreDialogIsOpen] = useState<boolean>(false);
 
   const actualTrace = traces[currentTraceIndex];
 
@@ -24,10 +25,17 @@ export function TraceDetails() {
 
   const hasFailure = trace.some(span => span.status.code !== 0);
 
-  const tracePrompts = trace.find(span => span.name === 'ai.streamText')?.attributes?.['ai.prompt'] || '{}';
+  console.log(
+    '-->>',
+    trace.find(span => span.name === 'ai.streamText'),
+  );
+
+  const aiTrace = trace.find(span => span.name === 'ai.streamText');
+  const tracePrompts = aiTrace?.attributes?.['ai.prompt'] || '{}';
   const tracePromptsObj = JSON.parse(tracePrompts as string) || {};
   const traceInput = tracePromptsObj.messages.find((msg: any) => msg.role === 'user')?.content?.[0]?.['text'] || '';
-  const traceOutput = trace.find(span => span.name === 'ai.streamText')?.attributes?.['ai.response.text'] || '';
+  const traceOutput = aiTrace?.attributes?.['ai.response.text'] || '';
+  const traceId = aiTrace?.traceId || '';
 
   return (
     <>
@@ -61,6 +69,7 @@ export function TraceDetails() {
             )}
           </div>
 
+          <Button onClick={() => setScoreDialogIsOpen(true)}>Score</Button>
           <Button onClick={() => setDatasetDialogIsOpen(true)}>Save</Button>
         </Header>
 
@@ -68,7 +77,7 @@ export function TraceDetails() {
           <SpanView trace={trace} />
         </div>
       </aside>
-      <DatasetItemDetailsDialog
+      <DatasetItemDialog
         initialMode="save"
         isOpen={datasetDialogIsOpen}
         item={{
@@ -76,8 +85,17 @@ export function TraceDetails() {
           output: traceOutput as string,
         }}
         onClose={() => setDatasetDialogIsOpen(false)}
-        // onNext={toNextItem(selectedItem)}
-        // onPrevious={toPreviousItem(selectedItem)}
+        traceId={traceId}
+      />
+      <ScoreDialog
+        mode="score"
+        isOpen={scoreDialogIsOpen}
+        score={{
+          input: traceInput,
+          output: traceOutput as string,
+        }}
+        onClose={() => setScoreDialogIsOpen(false)}
+        traceId={traceId}
       />
     </>
   );

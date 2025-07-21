@@ -1,1 +1,1 @@
-export * from './dataset-item-details-dialog';
+export * from './dataset-item-dialog';
