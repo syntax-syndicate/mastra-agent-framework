@@ -5,13 +5,14 @@ export function ItemsListItem({
   selectedItem,
   onClick,
   children,
-  columnsStyle,
+  columnSizesStyle,
 }: {
   item: any;
   selectedItem: any | null;
   onClick?: (score: any) => void;
   children?: React.ReactNode;
   columnsStyle?: string;
+  columnSizesStyle?: string;
 }) {
   const isSelected = selectedItem?.id === item.id;
 
@@ -33,10 +34,7 @@ export function ItemsListItem({
     >
       <button
         onClick={handleClick}
-        className={cn(
-          'grid w-full px-[1.5rem] gap-[2rem] text-left items-center min-h-[3.5rem]',
-          `grid-cols-[2fr_3fr_9rem]`,
-        )}
+        className={cn('grid w-full px-[1.5rem] gap-[2rem] text-left items-center min-h-[3.5rem]', columnSizesStyle)}
       >
         {children}
       </button>

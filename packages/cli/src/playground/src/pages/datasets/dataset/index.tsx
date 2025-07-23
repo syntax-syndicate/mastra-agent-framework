@@ -56,12 +56,14 @@ export default function Dataset() {
     }
     return () => setSelectedItem(datasetItems[(currentIndex || 0) - 1]);
   };
-  // if (isLoading) {
-  //   return null;
-  // }
 
   const columnNames = ['Input', 'Output', 'Updated at'];
   const columnSizes = '2fr_3fr_9rem';
+  const columns = [
+    { name: 'input', label: 'Input', size: '2fr' },
+    { name: 'output', label: 'Output', size: '3fr' },
+    { name: 'updatedAt', label: 'Updated at', size: '9rem' },
+  ];
 
   return (
     <MainContentLayout>
@@ -80,13 +82,12 @@ export default function Dataset() {
           <div className={cn(`h-full overflow-y-scroll `)}>
             <div className={cn('max-w-[100rem] px-[3rem] mx-auto')}>
               <ItemsListPageHeader title={dataset.name} description={dataset.description} />
-              <ItemsListHeader columnNames={columnNames} columnSizes={columnSizes} />
+              <ItemsListHeader columnNames={columnNames} columnSizes={columnSizes} columns={columns} />
               <ItemsList
                 items={datasetItems || []}
                 selectedItem={selectedItem}
                 onItemClick={handleOnListItemClick}
-                columnSizes={`2fr_3fr_9rem`}
-                columnNames={columnNames}
+                columns={columns}
                 //  isLoading={scoresLoading}
                 //  total={scoresTotal}
                 //  page={scoresPage}

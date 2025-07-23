@@ -1,6 +1,8 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { ItemsListItem, ItemsListCell } from '@/components/temporary/items-list';
+import { ItemsListCell } from './items-list-cell';
+import { ItemsListItem } from './items-list-item';
+import { type Column, getColumnSizesStyle } from './shared';
 
 import { cn } from '@/lib/utils';
 
@@ -15,8 +17,7 @@ export function ItemsList({
   onNextPage,
   onPrevPage,
   perPage,
-  columnSizes,
-  columnNames,
+  columns,
 }: {
   items: any[];
   selectedItem: any;
@@ -28,10 +29,9 @@ export function ItemsList({
   onNextPage?: () => void;
   onPrevPage?: () => void;
   perPage?: number;
-  columnSizes?: string;
-  columnNames: string[];
+  columns?: Column[];
 }) {
-  const columnsStyle = columnSizes || columnNames.map(() => '1fr').join('_');
+  const columnSizesStyle = getColumnSizesStyle(columns);
 
   if (isLoading) {
     return (
@@ -61,7 +61,8 @@ export function ItemsList({
                 item={item}
                 selectedItem={selectedItem}
                 onClick={onItemClick}
-                columnsStyle={columnsStyle}
+                columnsStyle={'2fr_3fr_9rem'}
+                columnSizesStyle={columnSizesStyle}
               >
                 <ItemsListCell>{item.input}</ItemsListCell>
                 <ItemsListCell>{item.output}</ItemsListCell>
