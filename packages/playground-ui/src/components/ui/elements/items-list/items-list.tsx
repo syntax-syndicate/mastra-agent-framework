@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { ItemsListItem } from './items-list-item';
 import { ItemsListCell } from './items-list-cell';
+import { ItemsListItem } from './items-list-item';
+import { getColumnTemplate, type Column } from './shared';
 
 import { cn } from '@/lib/utils';
 
@@ -16,8 +16,7 @@ export function ItemsList({
   onNextPage,
   onPrevPage,
   perPage,
-  columnSizes,
-  columnNames,
+  columns,
 }: {
   items: any[];
   selectedItem: any;
@@ -29,11 +28,8 @@ export function ItemsList({
   onNextPage?: () => void;
   onPrevPage?: () => void;
   perPage?: number;
-  columnSizes?: string;
-  columnNames: string[];
+  columns?: Column[];
 }) {
-  const columnsStyle = columnSizes || columnNames.map(() => '1fr').join('_');
-
   if (isLoading) {
     return (
       <div className="flex border border-border1 w-full h-[3.5rem] items-center justify-center text-[0.875rem] text-icon3 rounded-lg">
@@ -43,30 +39,37 @@ export function ItemsList({
   }
 
   return (
-    <div className="grid gap-[2rem] mb-[3rem]">
-      <ul className="grid border border-border1f bg-surface3 rounded-xl ">
+    <div className="grid mb-[3rem]">
+      <div className={cn('sticky top-0 bg-surface4 z-[1] mt-[1rem]  rounded-t-lg border border-border1  px-[1.5rem]')}>
+        <div
+          className={cn('grid gap-[2rem] text-left text-[0.75rem] text-icon3 uppercase py-[.75rem]')}
+          style={{ gridTemplateColumns: getColumnTemplate(columns) }}
+        >
+          {columns?.map(col => (
+            <span key={col.name} className="text-icon3 font-semibold">
+              {col.name}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <ul className="grid border border-border1 border-t-0 bg-surface3 rounded-xl rounded-t-none ">
         {items?.length === 0 && (
-          <li className="text-icon3 text-[0.875rem] text-center h-[3.5rem] items-center flex justify-center">
-            No scores found for this scorer.
-          </li>
+          <li className="text-icon3 text-[0.875rem] text-center h-[3.5rem] items-center flex justify-center">No</li>
         )}
         {items?.length > 0 &&
           items.map(item => {
-            const itemDateStr = item?.updatedAt || item?.createdAt;
-            const itemDate = itemDateStr ? new Date(itemDateStr) : null;
-            const itemDateFormatted = itemDate ? format(itemDate, 'MMM d HH:mm aa') : 'n/a';
-
             return (
               <ItemsListItem
                 key={item.id}
                 item={item}
                 selectedItem={selectedItem}
                 onClick={onItemClick}
-                columnsStyle={columnsStyle}
+                columns={columns}
               >
-                <ItemsListCell>{item.input}</ItemsListCell>
-                <ItemsListCell>{item.output}</ItemsListCell>
-                <ItemsListCell>{itemDateFormatted}</ItemsListCell>
+                {(columns || []).map(col => (
+                  <ItemsListCell key={col.name}>{item?.[col.name]}</ItemsListCell>
+                ))}
               </ItemsListItem>
             );
           })}

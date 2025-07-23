@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { formatDate } from 'date-fns';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 
@@ -54,6 +54,16 @@ export function DatasetItemDialog({
   const [mode, setMode] = useState<DialogMode>(initialMode);
   const isFormMode = ['create', 'edit', 'save'].includes(mode);
   const [targetDataset, setTargetDataset] = useState<string>('');
+
+  console.log({ initialMode, mode });
+
+  useEffect(() => {
+    if (isOpen && !item) {
+      setMode('create');
+    } else if (isOpen && item) {
+      setMode('view');
+    }
+  }, [item]);
 
   const handleDelete = () => {
     // Handle delete logic here
@@ -128,7 +138,6 @@ export function DatasetItemDialog({
             </SideDialogSection>
           </>
         )}
-        {mode === 'create' && <div>create mode</div>}
         {isFormMode && (
           <div
             className={cn('grid grid-rows-[1fr_2fr_auto] gap-[2rem]', {
@@ -166,7 +175,7 @@ export function DatasetItemDialog({
               <Label>Input</Label>
               <Textarea
                 className="disabled:opacity-80"
-                placeholder="Enter your prompt here..."
+                placeholder="Enter an input ..."
                 value={item?.input || ''}
                 rows={5}
               />
@@ -175,7 +184,7 @@ export function DatasetItemDialog({
               <Label>Output</Label>
               <Textarea
                 className="disabled:opacity-80"
-                placeholder="Enter your prompt here..."
+                placeholder="Enter an output ..."
                 value={item?.output || ''}
                 rows={5}
               />

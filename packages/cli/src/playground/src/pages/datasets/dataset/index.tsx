@@ -1,11 +1,21 @@
-import { Breadcrumb, Crumb, Header, MainContentLayout, DatasetItemDialog } from '@mastra/playground-ui';
+import {
+  Breadcrumb,
+  Crumb,
+  Header,
+  MainContentLayout,
+  DatasetItemDialog,
+  ItemsList,
+  ItemsListPageHeader,
+  UiButton,
+} from '@mastra/playground-ui';
 import { useParams, Link } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-import { ItemsList, ItemsListHeader, ItemsListPageHeader } from '@/components/temporary/items-list';
 import { faker } from '@faker-js/faker';
+import { format } from 'date-fns';
+import { PlusIcon, SearchIcon } from 'lucide-react';
 
 export default function Dataset() {
   const { datasetId } = useParams()! as { datasetId: string };
@@ -19,29 +29,38 @@ export default function Dataset() {
   }; // useDataset(datasetId!);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [detailsIsOpened, setDetailsIsOpened] = useState<boolean>(false);
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+
+  console.log({ selectedItem });
 
   const datasetItems = useMemo(
     () =>
-      Array.from({ length: 5 }, () => ({
+      Array.from({ length: 35 }, () => ({
         id: faker.string.uuid(),
         input: faker.lorem.paragraphs({ min: 1, max: 1 }),
         output: faker.lorem.paragraphs({ min: 4, max: 12 }),
         createdAt: new Date(),
         updatedAt: new Date(),
+        updatedAtStr: format(new Date(), 'MMM d HH:mm aa'),
         source: 'user',
       })),
     [],
   );
 
-  const handleOnListItemClick = (score: any) => {
+  const handleOnListItem = (score: any) => {
     if (score.id === selectedItem?.id) {
       setSelectedItem(null);
     } else {
       setSelectedItem(score);
-      setDetailsIsOpened(true);
+      setDialogIsOpen(true);
     }
   };
+
+  const handleOnAdd = () => {
+    setSelectedItem(null);
+    setDialogIsOpen(true);
+  };
+
   const toPreviousItem = (currentScore: any) => {
     const currentIndex = datasetItems?.findIndex(score => score?.id === currentScore?.id);
     if (currentIndex === -1 || currentIndex === (datasetItems?.length || 0) - 1) {
@@ -57,12 +76,11 @@ export default function Dataset() {
     return () => setSelectedItem(datasetItems[(currentIndex || 0) - 1]);
   };
 
-  const columnNames = ['Input', 'Output', 'Updated at'];
-  const columnSizes = '2fr_3fr_9rem';
   const columns = [
     { name: 'input', label: 'Input', size: '2fr' },
     { name: 'output', label: 'Output', size: '3fr' },
-    { name: 'updatedAt', label: 'Updated at', size: '9rem' },
+    { name: 'source', label: 'Source', size: '7rem' },
+    { name: 'updatedAtStr', label: 'Updated at', size: '9rem' },
   ];
 
   return (
@@ -82,11 +100,27 @@ export default function Dataset() {
           <div className={cn(`h-full overflow-y-scroll `)}>
             <div className={cn('max-w-[100rem] px-[3rem] mx-auto')}>
               <ItemsListPageHeader title={dataset.name} description={dataset.description} />
-              <ItemsListHeader columnNames={columnNames} columnSizes={columnSizes} columns={columns} />
+              <div className="flex items-center justify-between mb-4">
+                <div className="px-4 flex items-center gap-2 rounded-lg bg-surface5 focus-within:ring-2 focus-within:ring-accent3">
+                  <SearchIcon />
+
+                  <input
+                    type="text"
+                    placeholder="Search for a tool"
+                    className="w-full py-2 bg-transparent text-icon3 focus:text-icon6 placeholder:text-icon3 outline-none"
+                    value={''}
+                    onChange={() => {}}
+                  />
+                </div>
+
+                <UiButton onClick={handleOnAdd} variant="outline" size="lg">
+                  Add <PlusIcon />
+                </UiButton>
+              </div>
               <ItemsList
                 items={datasetItems || []}
                 selectedItem={selectedItem}
-                onItemClick={handleOnListItemClick}
+                onItemClick={handleOnListItem}
                 columns={columns}
                 //  isLoading={scoresLoading}
                 //  total={scoresTotal}
@@ -99,10 +133,11 @@ export default function Dataset() {
             </div>
           </div>
           <DatasetItemDialog
+            // initialMode={selectedItem ? 'view' : 'create'}
             dataset={dataset}
-            isOpen={detailsIsOpened}
+            isOpen={dialogIsOpen}
             item={selectedItem}
-            onClose={() => setDetailsIsOpened(false)}
+            onClose={() => setDialogIsOpen(false)}
             onNext={toNextItem(selectedItem)}
             onPrevious={toPreviousItem(selectedItem)}
           />
