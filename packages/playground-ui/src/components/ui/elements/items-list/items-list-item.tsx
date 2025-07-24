@@ -28,7 +28,7 @@ export function ItemsListItem({
     >
       <button
         onClick={handleClick}
-        className={cn('grid w-full px-[1.5rem] gap-[2rem] text-left items-center min-h-[3.5rem]')}
+        className={cn('grid w-full px-[1.5rem] gap-[2rem] text-left items-center min-h-[3rem]', 'hover:bg-surface5')}
         style={{ gridTemplateColumns: getColumnTemplate(columns) }}
       >
         {children}

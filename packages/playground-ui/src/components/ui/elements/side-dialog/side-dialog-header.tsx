@@ -68,6 +68,11 @@ export function SideDialogHeader({ children, onNext, onPrevious, showInnerNav }:
   );
 }
 
-export function SideDialogHeaderGroup({ children }: { children: React.ReactNode }) {
-  return <div className="flex items-center gap-[.5rem]">{children}</div>;
+type SideDialogHeaderGroupProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+export function SideDialogHeaderGroup({ children, className }: SideDialogHeaderGroupProps) {
+  return <div className={cn('flex items-center gap-[.5rem]', className)}>{children}</div>;
 }

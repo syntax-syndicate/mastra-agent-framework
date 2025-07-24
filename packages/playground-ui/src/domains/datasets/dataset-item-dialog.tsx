@@ -63,7 +63,7 @@ export function DatasetItemDialog({
     } else if (isOpen && item) {
       setMode('view');
     }
-  }, [item]);
+  }, [item, isOpen]);
 
   const handleDelete = () => {
     // Handle delete logic here
@@ -88,7 +88,8 @@ export function DatasetItemDialog({
         <SideDialogHeaderGroup>
           {['edit', 'view', 'delete'].includes(mode) && (
             <>
-              <DatabaseIcon /> {dataset?.name} <ChevronRightIcon /> <FileTextIcon /> {item?.id}
+              <DatabaseIcon /> <span className="truncate">{dataset?.name}</span>
+              <ChevronRightIcon /> <FileTextIcon /> <span className="truncate">{item?.id?.split('-')[0]}</span>
             </>
           )}
           {mode === 'create' && <div>Create a new dataset item</div>}
@@ -218,9 +219,6 @@ export function DatasetItemDialog({
       {mode === 'view' && (
         <SideDialogFooter showInnerNav={true} onNext={onNext} onPrevious={onPrevious}>
           <SideDialogFooterGroup>
-            <span className="text-icon4 text-[0.75rem] mr-[1rem]">
-              Updated at {item?.updatedAt ? formatDate(new Date(item.updatedAt), 'LLL do yyyy, hh:mm bb') : 'n/a'}
-            </span>
             <Button onClick={handleEdit} variant="ghost">
               Edit <EditIcon />
             </Button>

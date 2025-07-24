@@ -15,7 +15,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const sizeClasses = {
   md: 'min-h-[2rem] text-[0.875rem]',
-  lg: 'min-h-[2.5rem]',
+  lg: 'min-h-[2.5rem] text-[0.9375rem]',
 };
 
 const variantClasses = {

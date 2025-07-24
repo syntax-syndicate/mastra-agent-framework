@@ -7,30 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import { useDatasets } from '@/domains/datasets/useDatasets';
 
 export default function Datasets() {
+  const { datasets, isLoading } = useDatasets();
   const [createDialogIsOpen, setCreateDialogIsOpen] = useState(false);
-
-  //   const { scorers, isLoading } = useDatasets();
-
-  // const datasetListData = Object.entries(dataset || {}).map(([key, dataset]) => ({
-  //   id: key,
-  //   name: dataset.dataset.name,
-  //   description: dataset.dataset.description,
-  // }));
-
-  const mockDatasetListData = [
-    {
-      id: '1',
-      name: 'My first Dataset ',
-      description: 'This is a sample dataset description.',
-    },
-    {
-      id: '2',
-      name: 'My second Dataset',
-      description: 'This is another sample dataset description.',
-    },
-  ];
 
   return (
     <>
@@ -44,7 +25,7 @@ export default function Datasets() {
         <div>
           <DataTable
             columns={datasetsTableColumns}
-            data={mockDatasetListData || []}
+            data={datasets || []}
             isLoading={false}
             onClick={props => {
               console.log(props);

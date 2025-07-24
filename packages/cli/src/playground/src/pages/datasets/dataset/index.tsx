@@ -4,48 +4,26 @@ import {
   Header,
   MainContentLayout,
   DatasetItemDialog,
-  ItemsList,
   ItemsListPageHeader,
-  UiButton,
+  DatasetItemsList,
+  DatasetItemsTools,
 } from '@mastra/playground-ui';
 import { useParams, Link } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-import { faker } from '@faker-js/faker';
-import { format } from 'date-fns';
-import { PlusIcon, SearchIcon } from 'lucide-react';
+import { useDataset } from '@/domains/datasets/useDataset';
+import { useDatasetItems } from '@/domains/datasets/useDatasetItems';
 
 export default function Dataset() {
   const { datasetId } = useParams()! as { datasetId: string };
-  const { dataset, isLoading } = {
-    dataset: {
-      id: datasetId,
-      name: 'Sample Dataset',
-      description: 'This is a sample dataset description.',
-    },
-    isLoading: false,
-  }; // useDataset(datasetId!);
+  const { dataset, isLoading: isDatasetLoading } = useDataset(datasetId!);
+  const { items, isLoading: isItemsLoading } = useDatasetItems(datasetId!);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-
-  console.log({ selectedItem });
-
-  const datasetItems = useMemo(
-    () =>
-      Array.from({ length: 35 }, () => ({
-        id: faker.string.uuid(),
-        input: faker.lorem.paragraphs({ min: 1, max: 1 }),
-        output: faker.lorem.paragraphs({ min: 4, max: 12 }),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        updatedAtStr: format(new Date(), 'MMM d HH:mm aa'),
-        source: 'user',
-      })),
-    [],
-  );
+  const [currentVersion, setCurrentVersion] = useState<string>('0');
 
   const handleOnListItem = (score: any) => {
     if (score.id === selectedItem?.id) {
@@ -62,18 +40,23 @@ export default function Dataset() {
   };
 
   const toPreviousItem = (currentScore: any) => {
-    const currentIndex = datasetItems?.findIndex(score => score?.id === currentScore?.id);
-    if (currentIndex === -1 || currentIndex === (datasetItems?.length || 0) - 1) {
+    const currentIndex = items?.findIndex(score => score?.id === currentScore?.id);
+    if (currentIndex === -1 || currentIndex === (items?.length || 0) - 1) {
       return null; // No next score
     }
-    return () => setSelectedItem(datasetItems[(currentIndex || 0) + 1]);
+    return () => setSelectedItem(items[(currentIndex || 0) + 1]);
   };
   const toNextItem = (currentScore: any) => {
-    const currentIndex = datasetItems?.findIndex(score => score?.id === currentScore?.id);
+    const currentIndex = items?.findIndex(score => score?.id === currentScore?.id);
     if ((currentIndex || 0) <= 0) {
       return null; // No previous score
     }
-    return () => setSelectedItem(datasetItems[(currentIndex || 0) - 1]);
+    return () => setSelectedItem(items[(currentIndex || 0) - 1]);
+  };
+
+  const handleVersionChange = (value: string) => {
+    setCurrentVersion(value);
+    console.log('Version changed to:', value);
   };
 
   const columns = [
@@ -91,44 +74,27 @@ export default function Dataset() {
             Datasets
           </Crumb>
           <Crumb as={Link} to={`/datasets/${datasetId}`} isCurrent>
-            {isLoading ? <Skeleton className="w-20 h-4" /> : dataset.name || 'Not found'}
+            {isDatasetLoading ? <Skeleton className="w-20 h-4" /> : dataset?.name || 'Not found'}
           </Crumb>
         </Breadcrumb>
       </Header>
       {dataset ? (
         <>
           <div className={cn(`h-full overflow-y-scroll `)}>
-            <div className={cn('max-w-[100rem] px-[3rem] mx-auto')}>
+            <div className={cn('max-w-[100rem] px-[3rem] mx-auto grid gap-[1rem]')}>
               <ItemsListPageHeader title={dataset.name} description={dataset.description} />
-              <div className="flex items-center justify-between mb-4">
-                <div className="px-4 flex items-center gap-2 rounded-lg bg-surface5 focus-within:ring-2 focus-within:ring-accent3">
-                  <SearchIcon />
-
-                  <input
-                    type="text"
-                    placeholder="Search for a tool"
-                    className="w-full py-2 bg-transparent text-icon3 focus:text-icon6 placeholder:text-icon3 outline-none"
-                    value={''}
-                    onChange={() => {}}
-                  />
-                </div>
-
-                <UiButton onClick={handleOnAdd} variant="outline" size="lg">
-                  Add <PlusIcon />
-                </UiButton>
-              </div>
-              <ItemsList
-                items={datasetItems || []}
+              <DatasetItemsTools
+                onAdd={handleOnAdd}
+                currentVersion={currentVersion}
+                onVersionChange={handleVersionChange}
+                versionOptions={['07/23 10:30 AM', '07/23 9:35 AM', '07/23 9:30 AM']}
+              />
+              <DatasetItemsList
+                items={items || []}
                 selectedItem={selectedItem}
                 onItemClick={handleOnListItem}
                 columns={columns}
-                //  isLoading={scoresLoading}
-                //  total={scoresTotal}
-                //  page={scoresPage}
-                //  perPage={scoresPerPage}
-                //  hasMore={scoresHasMore}
-                //  onNextPage={handleNextPage}
-                //  onPrevPage={handlePrevPage}
+                isLoading={isItemsLoading}
               />
             </div>
           </div>

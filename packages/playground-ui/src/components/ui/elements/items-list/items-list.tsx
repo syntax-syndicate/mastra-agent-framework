@@ -40,7 +40,7 @@ export function ItemsList({
 
   return (
     <div className="grid mb-[3rem]">
-      <div className={cn('sticky top-0 bg-surface4 z-[1] mt-[1rem]  rounded-t-lg border border-border1  px-[1.5rem]')}>
+      <div className={cn('sticky top-0 bg-surface4 z-[1] rounded-t-lg border border-border1  px-[1.5rem]')}>
         <div
           className={cn('grid gap-[2rem] text-left text-[0.75rem] text-icon3 uppercase py-[.75rem]')}
           style={{ gridTemplateColumns: getColumnTemplate(columns) }}
