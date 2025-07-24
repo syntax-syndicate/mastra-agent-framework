@@ -1,10 +1,11 @@
-import { DataTableProps, AgentIcon, EntryCell } from '@mastra/playground-ui';
+import { DataTableProps, EntryCell } from '@mastra/playground-ui';
+import { DatabaseIcon } from 'lucide-react';
 import { Link } from 'react-router';
 
 const ScorerNameCell = ({ row }: { row: any }) => {
   return (
     <EntryCell
-      icon={<AgentIcon />}
+      icon={<DatabaseIcon />}
       name={
         <Link className="w-full space-y-0" to={`/datasets/${row.original.id}`}>
           {row.original.name}

@@ -11,7 +11,6 @@ export function SideDialog({
 }: {
   dialogTitle: string;
   isOpen: boolean;
-  item: any;
   onClose?: () => void;
   onNext?: (() => void) | null;
   onPrevious?: (() => void) | null;

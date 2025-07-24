@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-export function ItemsListPageHeader({ title, description }: { title: string; description: string }) {
+export function EntryListPageHeader({ title, description }: { title: string; description: string }) {
   return (
     <div
       className={cn(

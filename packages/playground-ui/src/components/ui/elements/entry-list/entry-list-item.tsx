@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Column, getColumnTemplate } from './shared';
 
-export function ItemsListItem({
+export function EntryListItem({
   item,
   selectedItem,
   onClick,

@@ -15,7 +15,7 @@ export interface DatasetItem {
 }
 
 const LOCAL_STORAGE_KEY = 'mastra.datasetItems';
-const INITIAL_ITEM_COUNT = 20;
+const INITIAL_ITEM_COUNT = 100;
 
 function generateInitialItems(datasets: Dataset[]): DatasetItem[] {
   if (!datasets.length) return [];
