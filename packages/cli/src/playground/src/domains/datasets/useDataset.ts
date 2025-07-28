@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { Dataset } from './useDatasets';
+import { type Dataset } from '@mastra/playground-ui';
 
 const LOCAL_STORAGE_KEY = 'mastra.datasets';
 
@@ -38,7 +38,7 @@ export function useDataset(id: string) {
   }, [id]);
 
   // Update dataset
-  const update = useCallback(
+  const updateDataset = useCallback(
     (updates: Partial<Omit<Dataset, 'id'>>) => {
       setDataset(prev => {
         if (!prev) return prev;
@@ -56,7 +56,7 @@ export function useDataset(id: string) {
   );
 
   // Delete dataset
-  const remove = useCallback(() => {
+  const removeDataset = useCallback(() => {
     setDataset(null);
     const all = getDatasetsFromStorage();
     const updated = all.filter(ds => ds.id !== id);
@@ -66,7 +66,7 @@ export function useDataset(id: string) {
   return {
     dataset,
     isLoading,
-    update,
-    remove,
+    updateDataset,
+    removeDataset,
   };
 }

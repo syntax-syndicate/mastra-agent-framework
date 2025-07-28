@@ -15,7 +15,7 @@ export interface DatasetItem {
 }
 
 const LOCAL_STORAGE_KEY = 'mastra.datasetItems';
-const INITIAL_ITEM_COUNT = 100;
+const INITIAL_ITEM_COUNT = 30;
 
 function generateInitialItems(datasets: Dataset[]): DatasetItem[] {
   if (!datasets.length) return [];
@@ -105,10 +105,7 @@ export function useDatasetItems(datasetId: string) {
     (id: string) => {
       setItems(prev => {
         const updated = prev.filter(item => item.id !== id);
-        // Save to all items in storage
-        const all = getItemsFromStorage(datasets)
-          .filter(i => !(i.datasetId === datasetId && i.id === id))
-          .concat(updated);
+        const all = getItemsFromStorage(datasets).filter(i => i.id !== id);
         saveItemsToStorage(all);
         return updated;
       });

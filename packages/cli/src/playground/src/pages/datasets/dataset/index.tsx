@@ -11,23 +11,27 @@ import {
   TabsList,
   TabsTrigger,
   EntryList,
+  DatasetSettings,
 } from '@mastra/playground-ui';
-import { useParams, Link } from 'react-router';
+import { useParams, Link, useNavigate } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 import { useDataset } from '@/domains/datasets/useDataset';
 import { useDatasetItems } from '@/domains/datasets/useDatasetItems';
+import { DatabaseIcon } from 'lucide-react';
 
 export default function Dataset() {
+  const navigate = useNavigate();
   const { datasetId } = useParams()! as { datasetId: string };
-  const { dataset, isLoading: isDatasetLoading } = useDataset(datasetId!);
-  const { items, isLoading: isItemsLoading } = useDatasetItems(datasetId!);
+  const { dataset, isLoading: isDatasetLoading, removeDataset, updateDataset } = useDataset(datasetId!);
+  const { items, isLoading, removeItem } = useDatasetItems(datasetId!);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const [currentVersion, setCurrentVersion] = useState<string>('0');
+  const [currentTab, setCurrentTab] = useState<string>('items');
 
   const handleOnListItem = (score: any) => {
     if (score.id === selectedItem?.id) {
@@ -63,6 +67,16 @@ export default function Dataset() {
     console.log('Version changed to:', value);
   };
 
+  const handleUpdate = (dataset: any) => {
+    updateDataset(dataset);
+    setCurrentTab('items');
+  };
+
+  const handleRemove = () => {
+    removeDataset();
+    navigate('/datasets');
+  };
+
   const itemsListColumns = [
     { name: 'input', label: 'Input', size: '2fr' },
     { name: 'output', label: 'Output', size: '3fr' },
@@ -95,11 +109,12 @@ export default function Dataset() {
         <>
           <div className={cn(`h-full overflow-y-scroll `)}>
             <div className={cn('max-w-[100rem] px-[3rem] mx-auto grid')}>
-              <EntryListPageHeader title={dataset.name} description={dataset.description} />
-              <Tabs defaultValue="items">
+              <EntryListPageHeader title={dataset.name} description={dataset.description} icon={<DatabaseIcon />} />
+              <Tabs value={currentTab} onValueChange={setCurrentTab}>
                 <TabsList>
                   <TabsTrigger value="items">Data items</TabsTrigger>
                   <TabsTrigger value="experiments">Experiments</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
                 <TabsContent value="items">
                   <DatasetItemsTools
@@ -113,7 +128,7 @@ export default function Dataset() {
                     selectedItem={selectedItem}
                     onItemClick={handleOnListItem}
                     columns={itemsListColumns}
-                    isLoading={isItemsLoading}
+                    isLoading={isLoading}
                   />
                 </TabsContent>
                 <TabsContent value="experiments">
@@ -125,17 +140,25 @@ export default function Dataset() {
                     isLoading={false}
                   />
                 </TabsContent>
+                <TabsContent value="settings">
+                  <DatasetSettings
+                    dataset={dataset}
+                    onUpdate={handleUpdate}
+                    onRemove={handleRemove}
+                    onCancel={() => setCurrentTab('items')}
+                  />
+                </TabsContent>
               </Tabs>
             </div>
           </div>
           <DatasetItemDialog
-            // initialMode={selectedItem ? 'view' : 'create'}
             dataset={dataset}
             isOpen={dialogIsOpen}
             item={selectedItem}
             onClose={() => setDialogIsOpen(false)}
             onNext={toNextItem(selectedItem)}
             onPrevious={toPreviousItem(selectedItem)}
+            removeItem={removeItem}
           />
         </>
       ) : null}

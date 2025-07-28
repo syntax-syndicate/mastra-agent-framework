@@ -1,25 +1,32 @@
 import {
   SideDialog,
   SideDialogHeader,
-  SideDialogHeaderGroup,
-  SideDialogFooter,
+  SideDialogTop,
   SideDialogContent,
   SideDialogSection,
-  SideDialogFooterGroup,
   SideDialogKeyValueList,
+  TextareaField,
+  InputField,
+  FormActions,
 } from '@/components/ui/elements';
 import { Button } from '@/components/ui/elements/button';
-import { ChevronRightIcon, DatabaseIcon, EditIcon, FileTextIcon, Trash2Icon } from 'lucide-react';
-import { Label } from '@/components/ui/label';
+import {
+  ChevronRightIcon,
+  DatabaseIcon,
+  EditIcon,
+  FileInputIcon,
+  FileOutputIcon,
+  FileTextIcon,
+  Trash2Icon,
+} from 'lucide-react';
 
 import { formatDate } from 'date-fns';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
-import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
 
-type DialogMode = 'view' | 'create' | 'edit' | 'delete' | 'save';
+type DialogMode = 'view' | 'create' | 'edit' | 'save';
 
 type DatasetItemDialogProps = {
   initialMode?: DialogMode;
@@ -39,6 +46,7 @@ type DatasetItemDialogProps = {
   onClose?: () => void;
   onNext?: (() => void) | null;
   onPrevious?: (() => void) | null;
+  removeItem?: (id: string) => void;
 };
 
 export function DatasetItemDialog({
@@ -50,12 +58,12 @@ export function DatasetItemDialog({
   onNext,
   onPrevious,
   traceId,
+  removeItem,
 }: DatasetItemDialogProps) {
   const [mode, setMode] = useState<DialogMode>(initialMode);
   const isFormMode = ['create', 'edit', 'save'].includes(mode);
   const [targetDataset, setTargetDataset] = useState<string>('');
-
-  console.log({ initialMode, mode });
+  const [confirmationIsOpen, setConfirmationIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen && !item) {
@@ -65,11 +73,16 @@ export function DatasetItemDialog({
     }
   }, [item, isOpen]);
 
-  const handleDelete = () => {
-    // Handle delete logic here
+  const handleDeleteRequest = () => {
+    setConfirmationIsOpen(true);
+  };
 
-    setMode('delete');
-    // onClose?.();
+  const handleDelete = () => {
+    if (item?.id) {
+      removeItem?.(item?.id);
+      setConfirmationIsOpen(false);
+      onClose?.();
+    }
   };
 
   const handleEdit = () => {
@@ -83,151 +96,170 @@ export function DatasetItemDialog({
   };
 
   return (
-    <SideDialog dialogTitle="Dataset Item Details" isOpen={isOpen} item={item} onClose={onClose}>
-      <SideDialogHeader onNext={onNext} onPrevious={onPrevious} showInnerNav={mode === 'view'}>
-        <SideDialogHeaderGroup>
-          {['edit', 'view', 'delete'].includes(mode) && (
+    <>
+      <SideDialog
+        dialogTitle="Dataset Item Details"
+        isOpen={isOpen}
+        onClose={onClose}
+        hasCloseButton={!confirmationIsOpen}
+      >
+        <SideDialogTop onNext={onNext} onPrevious={onPrevious} showInnerNav={mode === 'view'}>
+          <div className="flex items-center gap-[0.5rem] text-icon4 text-[0.875rem]">
+            {['edit', 'view', 'delete', 'create'].includes(mode) && (
+              <>
+                <DatabaseIcon /> <span className="truncate max-w-[8rem]">{dataset?.name}</span>
+                <ChevronRightIcon />
+                {['edit', 'view', 'delete'].includes(mode) && (
+                  <>
+                    <FileTextIcon />
+                    <span className="truncate">{item?.id?.split('-')[0]}</span>
+                  </>
+                )}
+                {['create'].includes(mode) && (
+                  <>
+                    <span className="truncate">New data</span>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </SideDialogTop>
+
+        <SideDialogContent isFullHeight={isFormMode}>
+          {mode === 'view' && (
             <>
-              <DatabaseIcon /> <span className="truncate">{dataset?.name}</span>
-              <ChevronRightIcon /> <FileTextIcon /> <span className="truncate">{item?.id?.split('-')[0]}</span>
+              <SideDialogHeader>
+                <h2>Dataset Item Details</h2>
+                <div className="flex items-center gap-[.5rem]">
+                  <Button onClick={handleEdit} variant="outline">
+                    Edit
+                    <EditIcon />
+                  </Button>
+                  <Button onClick={handleDeleteRequest} variant="outline">
+                    Delete
+                    <Trash2Icon />
+                  </Button>
+                </div>
+              </SideDialogHeader>
+
+              <SideDialogKeyValueList
+                items={[
+                  { key: 'Id', value: item?.id || 'N/A' },
+                  { key: 'Dataset', value: dataset?.name || 'N/A' },
+                  {
+                    key: 'Created at',
+                    value: item?.createdAt ? formatDate(new Date(item.createdAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
+                  },
+                  {
+                    key: 'Updated at',
+                    value: item?.updatedAt ? formatDate(new Date(item.updatedAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
+                  },
+                  { key: 'Source', value: traceId || 'N/A' },
+                ]}
+              />
+
+              <SideDialogSection>
+                <h3>
+                  <FileInputIcon /> Input
+                </h3>
+                <div className="font-mono text-[0.8125rem] text-[#ccc]">
+                  {item?.input && <MarkdownRenderer className="[&_p]:leading-[1.6]">{item.input}</MarkdownRenderer>}
+                </div>
+              </SideDialogSection>
+              <SideDialogSection>
+                <h3>
+                  <FileOutputIcon />
+                  Output
+                </h3>
+                <div className="font-mono text-[0.8125rem] text-[#ccc] ">
+                  {item?.output && <MarkdownRenderer className="[&_p]:leading-[1.6]">{item.output}</MarkdownRenderer>}
+                </div>
+              </SideDialogSection>
             </>
           )}
-          {mode === 'create' && <div>Create a new dataset item</div>}
-          {mode === 'save' && <div>Trace: {traceId}</div>}
-        </SideDialogHeaderGroup>
-      </SideDialogHeader>
 
-      <SideDialogContent isCentered={mode === 'delete'} isFullHeight={isFormMode}>
-        {mode === 'view' && (
-          <>
-            <SideDialogSection>
-              <div>
-                <h3>Info</h3>
-              </div>
-              <div className="">
-                <SideDialogKeyValueList
-                  items={[
-                    { key: 'Id', value: item?.id || 'N/A' },
-                    {
-                      key: 'Created at',
-                      value: item?.createdAt ? formatDate(new Date(item.createdAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
-                    },
-                    {
-                      key: 'Updated at',
-                      value: item?.updatedAt ? formatDate(new Date(item.updatedAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
-                    },
-                    { key: 'Source', value: traceId || 'N/A' },
-                  ]}
-                />
-              </div>
-            </SideDialogSection>
-            <SideDialogSection>
-              <div>
-                <h3>Input</h3>
-              </div>
-              <div className="font-mono text-[0.875rem] text-[#ccc]">
-                {item?.input && <MarkdownRenderer>{item.input}</MarkdownRenderer>}
-              </div>
-            </SideDialogSection>
-            <SideDialogSection>
-              <div>
-                <h3>Output</h3>
-              </div>
-              <div className="font-mono text-[0.875rem] text-[#ccc]">
-                {item?.output && <MarkdownRenderer>{item.output}</MarkdownRenderer>}
-              </div>
-            </SideDialogSection>
-          </>
-        )}
-        {isFormMode && (
-          <div
-            className={cn('grid grid-rows-[1fr_2fr_auto] gap-[2rem]', {
-              'grid-rows-[auto_1fr_2fr_auto]': mode === 'save',
-            })}
-          >
-            {mode === 'save' && (
-              <div className="flex items-baseline gap-[1rem]">
-                <label htmlFor="select-dataset" className="text-icon3 text-[0.875rem] font-semibold whitespace-nowrap">
-                  Dataset
-                </label>
-                <Select
-                  name="select-dataset"
-                  value={targetDataset}
-                  defaultValue="1"
-                  onValueChange={value => {
-                    setTargetDataset(value);
-                  }}
-                >
-                  <SelectTrigger id="select-dataset" className="w-full">
-                    <SelectValue placeholder="Select a dataset" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem key="1" value="1">
-                      My first Dataset
-                    </SelectItem>
-                    <SelectItem key="2" value="2">
-                      My second Dataset
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            <div className="grid gap-[1rem] [&>label]:text-icon4 [&>label]:text-[0.875rem] grid-rows-[auto_1fr]">
-              <Label>Input</Label>
-              <Textarea
-                className="disabled:opacity-80"
-                placeholder="Enter an input ..."
-                value={item?.input || ''}
-                rows={5}
+          {isFormMode && (
+            <div
+              className={cn('grid grid-rows-[auto_auto_1fr_2fr_auto] gap-[2rem]', {
+                'grid-rows-[auto_1fr_2fr_auto]': mode === 'create',
+              })}
+            >
+              <SideDialogHeader>
+                {mode === 'create' && <h2>Add a new data Item to the Dataset</h2>}
+                {mode === 'edit' && <h2>Edit Dataset Item</h2>}
+              </SideDialogHeader>
+
+              {mode === 'save' && (
+                <div className="flex items-baseline gap-[1rem]">
+                  <label
+                    htmlFor="select-dataset"
+                    className="text-icon3 text-[0.875rem] font-semibold whitespace-nowrap"
+                  >
+                    Dataset
+                  </label>
+                  <Select
+                    name="select-dataset"
+                    value={targetDataset}
+                    defaultValue="1"
+                    onValueChange={value => {
+                      setTargetDataset(value);
+                    }}
+                  >
+                    <SelectTrigger id="select-dataset" className="w-full">
+                      <SelectValue placeholder="Select a dataset" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem key="1" value="1">
+                        My first Dataset
+                      </SelectItem>
+                      <SelectItem key="2" value="2">
+                        My second Dataset
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {mode === 'edit' && <InputField label="Name" value={item?.id} disabled />}
+              <TextareaField label="Input" value={item?.input} />
+              <TextareaField label="Output" value={item?.output} />
+              <FormActions
+                onSubmit={handleCancel}
+                onCancel={handleCancel}
+                isSubmitting={false}
+                submitLabel="Save"
+                cancelLabel="Cancel"
               />
             </div>
-            <div className="grid gap-[1rem] [&>label]:text-icon4 [&>label]:text-[0.875rem] grid-rows-[auto_1fr]">
-              <Label>Output</Label>
-              <Textarea
-                className="disabled:opacity-80"
-                placeholder="Enter an output ..."
-                value={item?.output || ''}
-                rows={5}
-              />
-            </div>
-            <div className="grid grid-cols-[3fr_1fr] w-full gap-[1rem] pb-[1rem]">
-              <Button onClick={handleCancel} size="lg" variant="outline">
-                Save {mode === 'edit' && 'changes'}
-              </Button>
-              <Button onClick={handleCancel} size="lg" variant="outline">
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-        {mode === 'delete' && (
-          <div className="text-icon4 text-[0.875rem] grid gap-[2rem] ">
-            <h3 className="text-[1rem]">Delete dataset item</h3>
-            <p>Are you sure you want to delete this item? This action cannot be undone.</p>
-            <div className="grid grid-cols-[3fr_1fr] w-full gap-[1rem] max-w-[30rem]">
-              <Button onClick={onClose} size="lg" variant="outline">
-                Delete <Trash2Icon />
-              </Button>
-              <Button onClick={handleCancel} size="lg" variant="outline">
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-      </SideDialogContent>
+          )}
+        </SideDialogContent>
+      </SideDialog>
 
-      {mode === 'view' && (
-        <SideDialogFooter showInnerNav={true} onNext={onNext} onPrevious={onPrevious}>
-          <SideDialogFooterGroup>
-            <Button onClick={handleEdit} variant="ghost">
-              Edit <EditIcon />
-            </Button>
-            <Button onClick={handleDelete} variant="ghost">
-              Delete <Trash2Icon />
-            </Button>
-          </SideDialogFooterGroup>
-        </SideDialogFooter>
-      )}
-    </SideDialog>
+      <SideDialog
+        dialogTitle="Deleting Dataset Item Confirmation"
+        variant="confirmation"
+        isOpen={confirmationIsOpen}
+        onClose={() => setConfirmationIsOpen(false)}
+      >
+        <SideDialogContent isCentered>
+          <div className="min-h-auto h-[60vh] ">
+            <div className="border border-icon2 p-[2.5rem] py-[1.75rem] rounded-lg grid gap-[1rem] bg-surface4 max-w-[30rem] ">
+              <h3 className="text-[1rem]">Delete Dataset Item</h3>
+              <p className="text-[0.875rem] text-icon4">
+                Are you sure you want to delete this item? This action cannot be undone.
+              </p>
+              <div className="flex justify-between w-full gap-[1rem] mt-[1rem]">
+                <Button onClick={handleDelete} size="lg" variant="outline">
+                  Delete <Trash2Icon />
+                </Button>
+                <Button onClick={() => setConfirmationIsOpen(false)} size="lg" variant="outline">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </SideDialogContent>
+      </SideDialog>
+    </>
   );
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { faker } from '@faker-js/faker';
 
 export interface Dataset {
-  id: string;
+  id?: string;
   name: string;
   description: string;
 }

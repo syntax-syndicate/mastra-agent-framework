@@ -1,6 +1,13 @@
 import { cn } from '@/lib/utils';
 
-export function EntryListPageHeader({ title, description }: { title: string; description: string }) {
+type EntryListPageHeaderProps = {
+  title: string;
+  description?: string;
+  children?: React.ReactNode;
+  icon?: React.ReactNode;
+};
+
+export function EntryListPageHeader({ title, description, icon, children }: EntryListPageHeaderProps) {
   return (
     <div
       className={cn(
@@ -9,9 +16,13 @@ export function EntryListPageHeader({ title, description }: { title: string; des
       )}
     >
       <div className="grid gap-[1rem] w">
-        <h1 className="text-icon6 text-[1.25rem]">{title}</h1>
+        <div className={cn('flex gap-[.75em] items-center', '[&>svg]:w-[1.1em] [&>svg]:h-[1.1em] [&>svg]:text-icon4')}>
+          {icon}
+          <h1 className="text-icon6 text-[1.25rem]">{title}</h1>
+        </div>
         <p className="m-0 text-[0.875rem]">{description}</p>
       </div>
+      {children}
     </div>
   );
 }

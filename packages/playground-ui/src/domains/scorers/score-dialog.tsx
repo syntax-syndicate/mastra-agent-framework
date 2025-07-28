@@ -1,7 +1,6 @@
 import {
   SideDialog,
   SideDialogHeader,
-  SideDialogHeaderGroup,
   SideDialogFooter,
   SideDialogContent,
   SideDialogSection,

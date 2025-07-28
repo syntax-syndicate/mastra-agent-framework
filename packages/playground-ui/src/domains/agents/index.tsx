@@ -6,3 +6,4 @@ export * from './components/agent-settings';
 export * from './components/agent-table/agent-table';
 export * from './components/runtime-context';
 export * from './components/provider-map-icon';
+export * from './components/agent-version-dialog';

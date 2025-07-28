@@ -1,7 +1,6 @@
 'use client';
 
 import { Select as BaseSelect, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
-import { placeholder } from '@uiw/react-codemirror';
 
 type SelectOption = {
   label: string;
@@ -18,8 +17,6 @@ type SelectProps = {
 };
 
 export function Select({ name, onChange, defaultValue, value, options, placeholder }: SelectProps) {
-  console.log({ value });
-
   return (
     <BaseSelect name={name} onValueChange={onChange} value={value}>
       <SelectTrigger>

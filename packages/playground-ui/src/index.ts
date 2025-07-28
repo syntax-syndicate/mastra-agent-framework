@@ -30,6 +30,7 @@ export * from './components/ui/input';
 export * from './components/ui/textarea';
 export * from './components/ui/markdown-renderer';
 export * from './components/ui/elements';
+export * from './components/ui/label';
 
 export type { TraceContextType } from './domains/traces/context/trace-context';
 
