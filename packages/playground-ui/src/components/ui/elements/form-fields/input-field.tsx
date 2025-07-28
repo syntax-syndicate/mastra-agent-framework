@@ -45,7 +45,7 @@ export function InputField({
         type={type}
         value={value}
         className={cn(
-          'flex items-center text-[0.875rem] text-[rgba(255,255,255,0.7)] border border-[rgba(255,255,255,0.15)] leading-none rounded-lg bg-transparent min-h-[2.5rem] px-[0.75rem] py-[0.5rem]',
+          'flex items-center text-[0.875rem] text-[rgba(255,255,255,0.7)] border border-[rgba(255,255,255,0.15)] leading-none rounded-lg bg-transparent min-h-[2.25rem] px-[0.75rem] py-[0.5rem]',
           { 'cursor-not-allowed opacity-50': disabled },
           { 'border-red-600': errorMsg },
         )}

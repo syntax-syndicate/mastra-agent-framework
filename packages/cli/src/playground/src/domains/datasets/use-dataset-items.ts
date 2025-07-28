@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { faker } from '@faker-js/faker';
 import { format } from 'date-fns';
-import { useDatasets, Dataset } from './useDatasets';
+import { useDatasets, Dataset } from './use-datasets';
 
 export interface DatasetItem {
   id: string;
@@ -19,6 +19,7 @@ const INITIAL_ITEM_COUNT = 30;
 
 function generateInitialItems(datasets: Dataset[]): DatasetItem[] {
   if (!datasets.length) return [];
+
   return Array.from({ length: INITIAL_ITEM_COUNT }, () => {
     const dataset = faker.helpers.arrayElement(datasets);
     const createdAt = faker.date.recent({ days: 10 });

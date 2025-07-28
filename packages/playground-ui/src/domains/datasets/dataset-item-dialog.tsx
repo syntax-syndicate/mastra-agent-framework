@@ -20,20 +20,18 @@ import {
   Trash2Icon,
 } from 'lucide-react';
 
-import { formatDate } from 'date-fns';
+import { format } from 'date-fns';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select';
+import { type Dataset } from './shared';
 
 type DialogMode = 'view' | 'create' | 'edit' | 'save';
 
 type DatasetItemDialogProps = {
   initialMode?: DialogMode;
-  dataset?: {
-    id: string;
-    name: string;
-  };
+  dataset?: Dataset;
   item?: {
     id?: string;
     input?: string;
@@ -148,11 +146,11 @@ export function DatasetItemDialog({
                   { key: 'Dataset', value: dataset?.name || 'N/A' },
                   {
                     key: 'Created at',
-                    value: item?.createdAt ? formatDate(new Date(item.createdAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
+                    value: item?.createdAt ? format(new Date(item.createdAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
                   },
                   {
                     key: 'Updated at',
-                    value: item?.updatedAt ? formatDate(new Date(item.updatedAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
+                    value: item?.updatedAt ? format(new Date(item.updatedAt), 'LLL do yyyy, hh:mm bb') : 'N/A',
                   },
                   { key: 'Source', value: traceId || 'N/A' },
                 ]}

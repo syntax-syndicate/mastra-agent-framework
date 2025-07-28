@@ -1,7 +1,7 @@
 import { Button, DataTable, Header, HeaderTitle, MainContentLayout, DatasetDialog } from '@mastra/playground-ui';
 import { datasetsTableColumns } from '@/domains/datasets/table.columns';
 import { useState } from 'react';
-import { useDatasets, type Dataset } from '@/domains/datasets/useDatasets';
+import { useDatasets, type Dataset } from '@/domains/datasets/use-datasets';
 
 export default function Datasets() {
   const { datasets, isLoading, createDataset } = useDatasets();

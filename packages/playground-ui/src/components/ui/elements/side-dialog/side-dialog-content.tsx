@@ -12,7 +12,7 @@ export function SideDialogContent({ children, className, isCentered, isFullHeigh
   return (
     <div className={cn('p-[3rem] py-[2rem] overflow-y-scroll', className)}>
       <div
-        className={cn('grid gap-[2rem] max-w-[50rem] w-full mx-auto pb-[3rem] ', {
+        className={cn('grid gap-[2rem] max-w-[50rem] w-full mx-auto pb-[1rem] ', {
           'items-center justify-center h-full content-center': isCentered,
           'min-h-full': isFullHeight,
           'content-start': !isFullHeight && !isCentered,

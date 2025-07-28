@@ -18,8 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
-import { useDataset } from '@/domains/datasets/useDataset';
-import { useDatasetItems } from '@/domains/datasets/useDatasetItems';
+import { useDataset } from '@/domains/datasets/use-dataset';
+import { useDatasetItems } from '@/domains/datasets/use-dataset-items';
 import { DatabaseIcon } from 'lucide-react';
 
 export default function Dataset() {

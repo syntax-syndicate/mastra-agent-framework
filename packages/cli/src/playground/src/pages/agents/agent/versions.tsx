@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import { format } from 'date-fns';
 import { useState } from 'react';
 
-function AgentCMSPage() {
+export default function AgentVersionsPage() {
   const { agentId } = useParams();
   const { agent, isLoading: isAgentLoading } = useAgent(agentId!);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
@@ -20,7 +20,7 @@ function AgentCMSPage() {
     { name: 'createdAt', label: 'Created at', size: '7rem' },
   ];
 
-  const cmsItems = versions.map(version => ({
+  const agentVersions = versions.map(version => ({
     id: format(version.timestamp, 'MMM d HH:mm aa'),
     instructions: version.content,
     createdAt: format(version.timestamp, 'MMM d HH:mm aa'),
@@ -36,16 +36,14 @@ function AgentCMSPage() {
     }
   };
 
-  console.log({ cmsItems });
-
   return (
     <>
       <MainContentLayout>
         <div className={cn(`h-full overflow-y-scroll `)}>
           <div className={cn('max-w-[100rem] px-[3rem] mx-auto grid')}>
-            <EntryListPageHeader title={`${agent?.name}`} description={'Versions of the agent prompt and settings'} />
+            <EntryListPageHeader title="Versions" description={'Versions of the agent prompt and settings'} />
             <EntryList
-              items={cmsItems}
+              items={agentVersions}
               selectedItem={null}
               onItemClick={handleOnListItem}
               columns={listColumns}
@@ -58,5 +56,3 @@ function AgentCMSPage() {
     </>
   );
 }
-
-export default AgentCMSPage;
