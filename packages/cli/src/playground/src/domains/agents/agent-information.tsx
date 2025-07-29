@@ -12,11 +12,14 @@ import { providerMapToIcon } from './table.columns';
 import { AgentOverview } from './agent-overview';
 import { useMemory } from '@/hooks/use-memory';
 import { AgentWorkingMemory } from './agent-working-memory';
+import { AgentDetails } from './agent-details';
 
 export function AgentInformation({ agentId }: { agentId: string }) {
   const { agent, isLoading } = useAgent(agentId);
   const { memory, isLoading: isMemoryLoading } = useMemory(agentId);
   const { handleCopy } = useCopyToClipboard({ text: agentId });
+
+  const withCms = true;
 
   const providerIcon = providerMapToIcon[(agent?.provider || 'openai.chat') as keyof typeof providerMapToIcon];
 
@@ -86,11 +89,13 @@ export function AgentInformation({ agentId }: { agentId: string }) {
             </p>
           </TabsTrigger>
 
-          <TabsTrigger value="model-settings" className="group">
-            <p className="text-xs p-3 text-mastra-el-3 group-data-[state=active]:text-mastra-el-5 group-data-[state=active]:border-b-2 group-data-[state=active]:pb-2.5 border-white">
-              Model&nbsp;settings
-            </p>
-          </TabsTrigger>
+          {!withCms && (
+            <TabsTrigger value="model-settings" className="group">
+              <p className="text-xs p-3 text-mastra-el-3 group-data-[state=active]:text-mastra-el-5 group-data-[state=active]:border-b-2 group-data-[state=active]:pb-2.5 border-white">
+                Model&nbsp;settings
+              </p>
+            </TabsTrigger>
+          )}
 
           <TabsTrigger value="endpoints" className="group">
             <p className="text-xs p-3 text-mastra-el-3 group-data-[state=active]:text-mastra-el-5 group-data-[state=active]:border-b-2 group-data-[state=active]:pb-2.5 border-white">
@@ -112,7 +117,15 @@ export function AgentInformation({ agentId }: { agentId: string }) {
         <div className="overflow-y-auto">
           <TabsContent value="overview">
             {isLoading && <Skeleton className="h-full" />}
-            {agent && <AgentOverview agent={agent} agentId={agentId} />}
+            {agent && (
+              <>
+                {withCms ? (
+                  <AgentDetails agent={agent} agentId={agentId} />
+                ) : (
+                  <AgentOverview agent={agent} agentId={agentId} />
+                )}
+              </>
+            )}
           </TabsContent>
           <TabsContent value="model-settings">
             {isLoading && <Skeleton className="h-full" />}

@@ -6,6 +6,7 @@ import {
   SideDialogKeyValueList,
   SideDialogSection,
   TextareaField,
+  SelectField,
   FormActions,
 } from '@/components/ui/elements';
 import { Button } from '@/components/ui/elements/button';
@@ -30,6 +31,8 @@ type AgentTraceDialogProps = {
   onCreate?: (dataset: any) => void;
   onNext?: (() => void) | null;
   onPrevious?: (() => void) | null;
+  datasets?: any[];
+  scorers?: any[];
 };
 
 export function AgentTraceDialog({
@@ -40,6 +43,8 @@ export function AgentTraceDialog({
   onPrevious,
   trace,
   agent,
+  datasets = [],
+  scorers = [],
 }: AgentTraceDialogProps) {
   const [mode, setMode] = useState<DialogMode>(initialMode);
   const [targetDataset, setTargetDataset] = useState<string>('');
@@ -67,8 +72,10 @@ export function AgentTraceDialog({
     setTimeout(() => {
       setIsScoring(false);
       setScores([...scores, score]);
-    }, 2000);
+    }, 5000);
   };
+
+  console.log({ selectedScorer });
 
   return (
     <>
@@ -156,41 +163,28 @@ export function AgentTraceDialog({
                   </div>
                 )}
 
-                {isScoring ? (
-                  <div>
-                    <Spinner />
-                  </div>
-                ) : (
-                  <div className="flex items-baseline gap-[1rem]">
-                    <label
-                      htmlFor="select-dataset"
-                      className="text-icon3 text-[0.875rem] font-semibold whitespace-nowrap"
-                    >
-                      Score with
-                    </label>
-                    <Select
-                      name="select-dataset"
-                      value={selectedScorer}
-                      defaultValue="1"
-                      onValueChange={value => {
-                        setSelectedScorer(value);
-                      }}
-                    >
-                      <SelectTrigger id="select-dataset" className="w-full">
-                        <SelectValue placeholder="Select a scorer" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem key="1" value="1">
-                          My first Scorer
-                        </SelectItem>
-                        <SelectItem key="2" value="2">
-                          My second Scorer
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={handleScore}>Score</Button>
-                  </div>
-                )}
+                <div className="w-full flex items-center gap-[0.5rem] text-icon4 bg-[rgba(255,255,255,0.05)] p-[1rem] rounded-lg">
+                  {isScoring ? (
+                    <>
+                      <Spinner /> Scoring...
+                    </>
+                  ) : (
+                    <>
+                      <SelectField
+                        name="select-scorer"
+                        value={selectedScorer}
+                        onChange={value => {
+                          setSelectedScorer(value);
+                        }}
+                        options={scorers.map(scorer => ({
+                          value: scorer.id,
+                          label: scorer.name,
+                        }))}
+                      />
+                      <Button onClick={handleScore}>Score</Button>
+                    </>
+                  )}
+                </div>
               </SideDialogSection>
             </>
           )}
@@ -202,34 +196,19 @@ export function AgentTraceDialog({
               </SideDialogHeader>
 
               {mode === 'save' && (
-                <div className="flex items-baseline gap-[1rem]">
-                  <label
-                    htmlFor="select-dataset"
-                    className="text-icon3 text-[0.875rem] font-semibold whitespace-nowrap"
-                  >
-                    Dataset
-                  </label>
-                  <Select
-                    name="select-dataset"
-                    value={targetDataset}
-                    defaultValue="1"
-                    onValueChange={value => {
-                      setTargetDataset(value);
-                    }}
-                  >
-                    <SelectTrigger id="select-dataset" className="w-full">
-                      <SelectValue placeholder="Select a dataset" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem key="1" value="1">
-                        My first Dataset
-                      </SelectItem>
-                      <SelectItem key="2" value="2">
-                        My second Dataset
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <SelectField
+                  label="Dataset"
+                  name="select-dataset"
+                  value={targetDataset}
+                  placeholder="Select a dataset"
+                  onChange={value => {
+                    setTargetDataset(value);
+                  }}
+                  options={datasets.map(dataset => ({
+                    value: dataset.id,
+                    label: dataset.name,
+                  }))}
+                />
               )}
 
               {mode === 'save' && (

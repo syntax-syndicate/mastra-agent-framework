@@ -4,6 +4,7 @@ import { EntryList, EntryListPageHeader, MainContentLayout, AgentTraceDialog, Ag
 import { useParams } from 'react-router';
 import { useState } from 'react';
 import { useNewTraces } from '@/domains/agents/hooks/use-new-traces';
+import { useDatasets } from '@/domains/datasets/use-datasets';
 
 export default function AgentNewTracesPage() {
   const { agentId } = useParams();
@@ -11,6 +12,13 @@ export default function AgentNewTracesPage() {
   const { traces } = useNewTraces(agentId);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const [selectedTrace, setSelectedTrace] = useState<any>(null);
+  const { datasets } = useDatasets();
+
+  const scorers = [
+    { id: '1234', name: 'My first Scorer' },
+    { id: '2345', name: 'My second Scorer' },
+    { id: '3456', name: 'My third Scorer' },
+  ];
 
   const listColumns = [
     { name: 'input', label: 'Input', size: '1fr' },
@@ -35,7 +43,6 @@ export default function AgentNewTracesPage() {
             <EntryListPageHeader
               title="New Traces"
               description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'}
-              icon={<AgentIcon />}
             />
             <EntryList
               items={traces}
@@ -52,6 +59,8 @@ export default function AgentNewTracesPage() {
         isOpen={dialogIsOpen}
         agent={agent}
         onClose={() => setDialogIsOpen(false)}
+        datasets={datasets}
+        scorers={scorers}
       />
     </>
   );

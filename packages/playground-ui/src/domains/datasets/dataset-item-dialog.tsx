@@ -90,6 +90,7 @@ export function DatasetItemDialog({
   };
 
   const handleCancel = () => {
+    onClose?.();
     setMode('view');
   };
 
